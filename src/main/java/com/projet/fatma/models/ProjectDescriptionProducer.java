@@ -15,6 +15,7 @@ public class ProjectDescriptionProducer {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    private String stringId ;
     private String userName;
     @Temporal (TemporalType.DATE)
     private Date date;
@@ -23,11 +24,17 @@ public class ProjectDescriptionProducer {
     private float projectCost;
     private String fundingAgency;
     private String executingAgency;
+    @Enumerated(EnumType.STRING)
     private ProjectStatus projectStatus;
+    @Enumerated(EnumType.STRING)
     private Continent continent;
+    @Enumerated(EnumType.STRING)
     private Country country;
+    @Enumerated(EnumType.STRING)
     private Climate climate;
+    @Enumerated(EnumType.STRING)
     private Moisture moisture;
+    @Enumerated(EnumType.STRING)
     private SoilType soilType;
     private int implementationPhase;
     private int capitalizationPhase;

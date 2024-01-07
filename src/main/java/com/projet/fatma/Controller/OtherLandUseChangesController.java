@@ -30,7 +30,7 @@ public class OtherLandUseChangesController {
 
     @PutMapping("/Update_Land_Use_Changes/{landUseId}")
     public ResponseEntity<String> updateLandUse(
-            @PathVariable Long landUseId,
+            @PathVariable String landUseId,
             @RequestBody OtherLandUseChanges updatedOtherLandUse) {
         try {
             kafkaProducerLandUseService.update(landUseId,updatedOtherLandUse);
@@ -46,7 +46,7 @@ public class OtherLandUseChangesController {
     }
 
     @DeleteMapping("/Delete_Land_Use_Changes/{landUseId}")
-    public ResponseEntity<String> deleteLandUse(@PathVariable Long landUseId) {
+    public ResponseEntity<String> deleteLandUse(@PathVariable String landUseId) {
         try {
             // Delete the project description in the database
             kafkaProducerLandUseService.delete(landUseId );

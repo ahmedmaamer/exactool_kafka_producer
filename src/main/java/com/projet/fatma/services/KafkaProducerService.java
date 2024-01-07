@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -35,12 +36,12 @@ public class KafkaProducerService {
         return projectDescriptionRepository.save(projectDescription.getProjectDescription());
     }
 
-
-    public ProjectDescriptionProducer update(Long projectId, ProjectDescription projectDescription) {
+@Transactional
+    public ProjectDescriptionProducer update(String projectId, ProjectDescription projectDescription) {
         String topicName = "project-description-topic";
         projectDescription.setEventType("update");
         // Retrieve existing project description from the database
-        ProjectDescriptionProducer existingProjectDescriptionP = projectDescriptionRepository.findById(projectId)
+        ProjectDescriptionProducer existingProjectDescriptionP = projectDescriptionRepository.findByStringId(projectId)
                 .orElseThrow(() -> new EntityNotFoundException("Project not found with ID: " + projectId));
 
         // Get the new project description from the request body
@@ -82,12 +83,19 @@ public class KafkaProducerService {
         return projectDescriptionRepository.save(existingProjectDescriptionP);
     }
 
-    public void delete(Long projectId) {
+    @Transactional
+    public void delete(String projectStringId) {
+        ProjectDescriptionProducer existingProjectDescriptionP = projectDescriptionRepository.findByStringId(projectStringId)
+                .orElseThrow(() -> new EntityNotFoundException("Project not found with ID: " + projectStringId));
+
+        String ssd = existingProjectDescriptionP.getStringId();
+        Long iid = existingProjectDescriptionP.getId();
+
         // Check if the project with the given ID exists in the database
-        Optional<ProjectDescriptionProducer> existingProject = projectDescriptionRepository.findById(projectId);
+        Optional<ProjectDescriptionProducer> existingProject = projectDescriptionRepository.findByStringId(projectStringId);
         if (existingProject.isPresent()) {
             // Delete the project from the database
-            projectDescriptionRepository.deleteById(projectId);
+            projectDescriptionRepository.deleteByStringId(projectStringId);
 
             // Send a delete message to Kafka indicating the project deletion
             String topicName = "project-description-topic";
@@ -95,17 +103,18 @@ public class KafkaProducerService {
 
             // Create a message object indicating the deletion
             ProjectDescriptionProducer projectDescriptionProducer = new ProjectDescriptionProducer();
-            projectDescriptionProducer.setId(projectId);
+            projectDescriptionProducer.setId(iid);
+            projectDescriptionProducer.setStringId(ssd);
             ProjectDescription projectDescription = new ProjectDescription();
             projectDescription.setProjectDescription(projectDescriptionProducer);
             projectDescription.setEventType(eventType);
 
             // Send the deletion message to Kafka
-            projectDescriptionkafkaTemplate.send(topicName, projectId, projectDescription);
+            projectDescriptionkafkaTemplate.send(topicName, iid, projectDescription);
 
         } else {
             // Handle the case where the project with the given ID is not found
-            throw new EntityNotFoundException("Project not found with ID: " + projectId);
+            throw new EntityNotFoundException("Project not found with ID: " + projectStringId);
         }
     }
 }

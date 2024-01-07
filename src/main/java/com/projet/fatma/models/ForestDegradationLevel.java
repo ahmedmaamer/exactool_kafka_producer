@@ -1,4 +1,4 @@
-package com.example.exacttool.domain;
+package com.projet.fatma.models;
 
 public enum ForestDegradationLevel {
     NONE,

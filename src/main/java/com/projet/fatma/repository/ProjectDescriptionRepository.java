@@ -11,4 +11,10 @@ import java.util.UUID;
 @Repository
 public interface ProjectDescriptionRepository extends JpaRepository<ProjectDescriptionProducer,Long> {
     Optional<ProjectDescriptionProducer> findById(Long projectId);
+    Optional<ProjectDescriptionProducer> findByStringId(String projectStringId);
+
+    void deleteByStringId(String stringId);
+
+
+
 }

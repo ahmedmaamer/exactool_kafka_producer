@@ -1,12 +1,12 @@
 package com.projet.fatma.models;
 
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
 
 @Setter
 @Getter
@@ -15,11 +15,12 @@ import javax.persistence.*;
 @Entity
 @Table(name="forestDegradationAndManagement")
 
-public class ForestManagement {
+public class ForestManagementProducerr {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long id;
+    private Long id;
+    private String stringId ;
     private ForestVegetation forestVegetation;
     private ForestDegradationLevel startForestDegradationLevel;
     private ForestDegradationLevel withoutForestDegradationLevel;

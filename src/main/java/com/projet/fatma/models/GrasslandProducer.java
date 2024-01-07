@@ -1,4 +1,4 @@
-package com.example.exacttool.domain;
+package com.projet.fatma.models;
 
 
 import lombok.AllArgsConstructor;
@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Setter
 @Getter
@@ -15,16 +15,15 @@ import javax.persistence.*;
 @Entity
 @Table(name="grasslandSystemsTotal")
 
-public class GrasslandSysTotal {
+public class GrasslandProducer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long id;
+     private Long id;
+    private String stringId ;
     private String userNotesGrassland;
 
-    private GrasslandManagement startGrasslandManagement2;
-    private GrasslandManagement withoutGrasslandManagement2;
-    private GrasslandManagement withGrasslandManagement2;
+
     private Boolean withoutFireMang2;
     static final int year3 = 5;
     private Boolean withFireMang2;

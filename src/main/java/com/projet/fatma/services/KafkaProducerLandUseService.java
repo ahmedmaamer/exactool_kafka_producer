@@ -1,6 +1,7 @@
 package com.projet.fatma.services;
 
 
+import com.projet.fatma.models.GrasslandProducer;
 import com.projet.fatma.models.OtherLandUseChangesProducer;
 import com.projet.fatma.models.dto.OtherLandUseChanges;
 import com.projet.fatma.repository.OtherLandUseChangesRepository;
@@ -36,11 +37,11 @@ public class KafkaProducerLandUseService {
     }
 
 
-    public OtherLandUseChangesProducer update(Long landUseId, OtherLandUseChanges otherLandUseChanges) {
+    public OtherLandUseChangesProducer update(String landUseId, OtherLandUseChanges otherLandUseChanges) {
         String topicName = "land-use-topic";
         otherLandUseChanges.setEventType("update");
         // Retrieve existing project description from the database
-        OtherLandUseChangesProducer existingLandUSeP = otherLandUseChangesRepository.findById(landUseId)
+        OtherLandUseChangesProducer existingLandUSeP = otherLandUseChangesRepository.findByStringId(landUseId)
                 .orElseThrow(() -> new EntityNotFoundException("Project not found with ID: " + landUseId));
 
         // Get the new project description from the request body
@@ -75,12 +76,17 @@ public class KafkaProducerLandUseService {
         return otherLandUseChangesRepository.save(existingLandUSeP);
     }
 
-    public void delete(Long landUseId) {
+    public void delete(String landUseId) {
         // Check if the project with the given ID exists in the database
-        Optional<OtherLandUseChangesProducer> existingLandUse = otherLandUseChangesRepository.findById(landUseId);
+        OtherLandUseChangesProducer existingLandP = otherLandUseChangesRepository.findByStringId(landUseId)
+                .orElseThrow(() -> new EntityNotFoundException("Project not found with ID: " + landUseId));
+        // Check if the project with the given ID exists in the database
+        String ssd = existingLandP.getStringId();
+        Long iid = existingLandP.getId();
+        Optional<OtherLandUseChangesProducer> existingLandUse = otherLandUseChangesRepository.findByStringId(landUseId);
         if (existingLandUse.isPresent()) {
             // Delete the project from the database
-            otherLandUseChangesRepository.deleteById(landUseId);
+            otherLandUseChangesRepository.deleteByStringId(landUseId);
 
             // Send a delete message to Kafka indicating the project deletion
             String topicName = "land-use-topic";
@@ -88,13 +94,15 @@ public class KafkaProducerLandUseService {
 
             // Create a message object indicating the deletion
             OtherLandUseChangesProducer otherLandUseChangesProducer = new OtherLandUseChangesProducer();
-            otherLandUseChangesProducer.setId(landUseId);
+            otherLandUseChangesProducer.setId(iid);
+            otherLandUseChangesProducer.setStringId(ssd);
+
             OtherLandUseChanges otherLandUseChanges = new OtherLandUseChanges();
             otherLandUseChanges.setOtherLandUseChanges(otherLandUseChangesProducer);
             otherLandUseChanges.setEventType(eventType);
 
             // Send the deletion message to Kafka
-            otherLandUseChangesKafkaTemplate.send(topicName, landUseId, otherLandUseChanges);
+            otherLandUseChangesKafkaTemplate.send(topicName, iid, otherLandUseChanges);
 
         } else {
             // Handle the case where the project with the given ID is not found

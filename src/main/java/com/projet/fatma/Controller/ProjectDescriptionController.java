@@ -9,6 +9,9 @@
     import org.springframework.http.ResponseEntity;
     import org.springframework.web.bind.annotation.*;
 
+    import java.util.UUID;
+
+    @CrossOrigin("*")
 
     @RestController
     @Slf4j
@@ -19,16 +22,16 @@
 
         @PostMapping("/CreateProjectDescription")
         ResponseEntity<String>createProject(@RequestBody ProjectDescription projectDescription){
+            projectDescription.getProjectDescription().setStringId(UUID.randomUUID().toString());
             kafkaProducerService.create(projectDescription);
             return new ResponseEntity<>("Project added successfully", HttpStatus.CREATED);
 
         }
 
 
-
     @PutMapping("/Update_Project_Description/{projectId}")
     public ResponseEntity<String> updateProjectDescription(
-            @PathVariable Long projectId,
+            @PathVariable String projectId,
             @RequestBody ProjectDescription updatedProjectDescription) {
         try {
             kafkaProducerService.update(projectId,updatedProjectDescription);
@@ -44,7 +47,7 @@
     }
 
     @DeleteMapping("/Delete_Project_Description/{projectId}")
-    public ResponseEntity<String> deleteProjectDescription(@PathVariable Long projectId) {
+    public ResponseEntity<String> deleteProjectDescription(@PathVariable String projectId) {
         try {
             // Delete the project description in the database
             kafkaProducerService.delete(projectId );

@@ -23,5 +23,19 @@ public class KafkaConfig {
                 .replicas(1)
                 .build();
     }
+    @Bean
+    public NewTopic ForestManagemnetTopic() {
+        return TopicBuilder.name("forest-management-topic")
+                .partitions(1)
+                .replicas(1)
+                .build();
+    }
+    @Bean
+    public NewTopic GrassLandTopic() {
+        return TopicBuilder.name("grass-land-topic")
+                .partitions(1)
+                .replicas(1)
+                .build();
+    }
 }
 

@@ -18,6 +18,7 @@ public class OtherLandUseChangesProducer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
+    private String stringId ;
     private String userNotes;
     private Boolean fireUsed;
     private LandUseType initialLandUse3;

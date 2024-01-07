@@ -1,9 +1,14 @@
 spring:
+  main:
+    allow-bean-definition-overriding: 'true'
   security:
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8080/auth/realms/exactool}
+  cloud:
+    vault:
+      enabled: false
   profiles:
     include: default
   datasource:
